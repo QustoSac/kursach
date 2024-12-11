@@ -1,23 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:kursach/login_page.dart';
 import 'theme/theme.dart';
 
 class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text('Profile', style: AppStyles.titleTextStyle),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.transparent, // Прозрачный AppBar
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
         actions: [
           IconButton(
             icon: Icon(Icons.notifications, color: Colors.white),
             onPressed: () {
-              // Обработка уведомлений
+              // Логика уведомлений
             },
           ),
         ],
@@ -60,6 +63,8 @@ class ProfilePage extends StatelessWidget {
                 _buildMenuItem(context, 'Darkmode', icon: Icons.dark_mode),
                 _buildMenuItem(context, 'Only Download via Wifi', icon: Icons.wifi),
               ]),
+              SizedBox(height: 40), // Отступ перед кнопкой
+              _buildLogoutButton(context), // Добавление кнопки выхода
             ],
           ),
         ),
@@ -81,7 +86,7 @@ class ProfilePage extends StatelessWidget {
           ),
         ),
         ...items,
-        SizedBox(height: 10),
+        SizedBox(height: 20),
       ],
     );
   }
@@ -96,6 +101,54 @@ class ProfilePage extends StatelessWidget {
       onTap: () {
         // Обработка нажатия на элемент
       },
+    );
+  }
+
+  Widget _buildLogoutButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: ElevatedButton(
+        onPressed: () {
+          // Переход на страницу авторизации
+          Navigator.push(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => LoginPage(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                const begin = Offset(-1.0, 0.0); // Анимация справа налево
+                const end = Offset.zero;
+                const curve = Curves.easeOut;
+
+                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                var offsetAnimation = animation.drive(tween);
+
+                return SlideTransition(
+                  position: offsetAnimation,
+                  child: child,
+                );
+              },
+              transitionDuration: Duration(milliseconds: 1000),
+            ),
+          );// Маршрут для LoginPage
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.red, // Цвет кнопки "Выйти"
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          padding: EdgeInsets.symmetric(vertical: 15),
+        ),
+        child: Center(
+          child: Text(
+            'Выйти из аккаунта',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
