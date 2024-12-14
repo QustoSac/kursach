@@ -65,7 +65,7 @@ class _SplashScreenState extends State<SplashScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Голосовалка.',
+                'Голосовалка',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,

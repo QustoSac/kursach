@@ -53,18 +53,30 @@ class ResultsPage extends StatefulWidget {
             // Заголовок "Голосования"
             Row(
               children: [
-                GestureDetector(
-                  onTap: () {
-                    // Логика переключения голосований
-                  },
-                  child: Text(
-                    'Голосования',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                // GestureDetector(
+                //   onTap: () {
+                //     // Логика переключения голосований
+                //   },
+                //   child: Text(
+                //     'Голосования',
+                //     style: TextStyle(
+                //       color: Colors.white,
+                //       fontWeight: FontWeight.bold,
+                //       fontSize: 16,
+                //     ),
+                //   ),
+                // ),
+                new Flexible(child: SizedBox(
+                  width: double.infinity,
+                  height: 40,
+                  child: TextField(
+                    obscureText: true,
+                    decoration: AppStyles.golosovanieDecoration.copyWith(
+                      hintText: 'Голосование',
                     ),
+                    style: AppStyles.inputTextStyle,
                   ),
+                ),
                 ),
                 SizedBox(width: 40),
                 Switch(

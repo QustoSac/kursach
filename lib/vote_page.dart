@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kursach/main_page.dart';
 import 'package:kursach/results_page.dart';
 import 'theme/theme.dart'; // Подключение темы, если используется
 
@@ -26,7 +27,26 @@ class VotePage extends StatelessWidget {
                           IconButton(
                             icon: Icon(Icons.arrow_back, color: Colors.white),
                             onPressed: () {
-                              Navigator.pop(context);
+                              Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                  pageBuilder: (context, animation, secondaryAnimation) => MainPage(),
+                                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                    const begin = Offset(-1.0, 0.0); // Анимация справа налево
+                                    const end = Offset.zero;
+                                    const curve = Curves.easeOut;
+
+                                    var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                                    var offsetAnimation = animation.drive(tween);
+
+                                    return SlideTransition(
+                                      position: offsetAnimation,
+                                      child: child,
+                                    );
+                                  },
+                                  transitionDuration: Duration(milliseconds: 1000),
+                                ),
+                              );
                             },
                           ),
                         ],

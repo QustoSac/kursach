@@ -32,6 +32,15 @@ class AppStyles {
     fontSize: 16,
   );
 
+  static const InputDecoration golosovanieDecoration = InputDecoration(
+    filled: true,
+    fillColor: Colors.black,
+    hintStyle: hintTextStyle,
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+    ),
+  );
+
   static const InputDecoration inputDecoration = InputDecoration(
     filled: true,
     fillColor: Colors.black,

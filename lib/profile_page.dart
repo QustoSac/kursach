@@ -8,7 +8,7 @@ class ProfilePage extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent, // Прозрачный AppBar
+        backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
@@ -33,7 +33,7 @@ class ProfilePage extends StatelessWidget {
               SizedBox(height: 20),
               CircleAvatar(
                 radius: 50,
-                backgroundImage: AssetImage('assets/avatar_placeholder.png'), // Путь к изображению
+                backgroundImage: AssetImage('assets/avatar_placeholder.png'),
               ),
               SizedBox(height: 10),
               ElevatedButton(
@@ -50,21 +50,27 @@ class ProfilePage extends StatelessWidget {
               ),
               SizedBox(height: 30),
               _buildSection(context, 'Данные', [
-                _buildMenuItem(context, 'Логин'),
+                _buildMenuItem(context, 'Логин', onTap: () {
+                  _showMessageDialog(context, 'Ваш текущий логин: example_user');
+                }),
                 _buildMenuItem(context, 'Пароль'),
-                _buildMenuItem(context, 'ФИО'),
+                _buildMenuItem(context, 'ФИО', onTap: (){
+                  _showMessageDialog(context, 'Ваше ФИО: example_FIO');
+                }),
               ]),
               _buildSection(context, 'Организации', [
                 _buildMenuItem(context, 'Мои организации', icon: Icons.favorite),
-                _buildMenuItem(context, 'Добавить организацию', icon: Icons.download),
+                _buildMenuItem(context, 'Добавить организацию', icon: Icons.download, onTap: () {
+                  _showAddOrganizationBottomSheet(context);
+                }),
               ]),
               _buildSection(context, 'Настройки', [
                 _buildMenuItem(context, 'Язык', icon: Icons.language),
                 _buildMenuItem(context, 'Darkmode', icon: Icons.dark_mode),
                 _buildMenuItem(context, 'Only Download via Wifi', icon: Icons.wifi),
               ]),
-              SizedBox(height: 40), // Отступ перед кнопкой
-              _buildLogoutButton(context), // Добавление кнопки выхода
+              SizedBox(height: 40),
+              _buildLogoutButton(context),
             ],
           ),
         ),
@@ -91,16 +97,14 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuItem(BuildContext context, String label, {IconData? icon}) {
+  Widget _buildMenuItem(BuildContext context, String label, {IconData? icon, VoidCallback? onTap}) {
     return ListTile(
       leading: icon != null
           ? Icon(icon, color: Colors.white)
-          : SizedBox(width: 24), // Пустое пространство для выравнивания
+          : SizedBox(width: 24),
       title: Text(label, style: AppStyles.listTileTextStyle),
       trailing: Icon(Icons.chevron_right, color: Colors.white),
-      onTap: () {
-        // Обработка нажатия на элемент
-      },
+      onTap: onTap,
     );
   }
 
@@ -109,13 +113,12 @@ class ProfilePage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: ElevatedButton(
         onPressed: () {
-          // Переход на страницу авторизации
           Navigator.push(
             context,
             PageRouteBuilder(
               pageBuilder: (context, animation, secondaryAnimation) => LoginPage(),
               transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                const begin = Offset(-1.0, 0.0); // Анимация справа налево
+                const begin = Offset(-1.0, 0.0);
                 const end = Offset.zero;
                 const curve = Curves.easeOut;
 
@@ -129,10 +132,10 @@ class ProfilePage extends StatelessWidget {
               },
               transitionDuration: Duration(milliseconds: 1000),
             ),
-          );// Маршрут для LoginPage
+          );
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.red, // Цвет кнопки "Выйти"
+          backgroundColor: Colors.red,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -148,6 +151,65 @@ class ProfilePage extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  void _showMessageDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (context) =>
+        AlertDialog(
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text('OK'),
+          ),
+        ],
+      ),
+
+    );
+  }
+
+  void _showAddOrganizationBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Container(
+        decoration: AppStyles.backgroundGradient,
+        child: Padding(
+        padding: const EdgeInsets.only(left: 60, top: 20.0, right: 60, bottom: 20),
+
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              decoration: AppStyles.inputDecoration.copyWith(
+                hintText: 'Организация'
+              ),
+              style: AppStyles.inputTextStyle,
+              ),
+            SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+            child: ElevatedButton(
+
+              onPressed: () {
+                // Логика добавления организации
+                Navigator.of(context).pop();
+              },
+              child: Text('Добавить', style: AppStyles.buttonTextStyle),
+                style: AppStyles.elevatedButtonStyle
+            ),
+            ),
+          ],
+        ),
+      ),
       ),
     );
   }

@@ -57,18 +57,17 @@ class _MainPageState extends State<MainPage>{
                 // Заголовок "Голосования"
                 Row(
                   children: [
-                    GestureDetector(
-                      onTap: () {
-                        // Логика переключения голосований
-                      },
-                      child: Text(
-                        'Голосования',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                    new Flexible(child: SizedBox(
+                      width: double.infinity,
+                      height: 40,
+                      child: TextField(
+                        obscureText: true,
+                        decoration: AppStyles.golosovanieDecoration.copyWith(
+                          hintText: 'Голосование',
                         ),
+                        style: AppStyles.inputTextStyle,
                       ),
+                    ),
                     ),
                     SizedBox(width: 40),
                     Switch(
@@ -97,6 +96,12 @@ class _MainPageState extends State<MainPage>{
                       ),
                     ),
                     SizedBox(width: 10),
+                    // TextField(
+                    //   decoration: AppStyles.inputDecoration.copyWith(
+                    //     hintText: 'Логин',
+                    //   ),
+                    //   style: AppStyles.inputTextStyle,
+                    // )
                   ],
                 ),
                 // Список голосований

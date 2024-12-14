@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'main_page.dart';
 import 'theme/theme.dart';
+import 'results_page.dart';
 
 class ViewResultsPage extends StatelessWidget {
   @override
@@ -17,7 +18,26 @@ class ViewResultsPage extends StatelessWidget {
               IconButton(
               icon: Icon(Icons.arrow_back, color: Colors.white),
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) => ResultsPage(),
+                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(-1.0, 0.0); // Анимация справа налево
+                        const end = Offset.zero;
+                        const curve = Curves.easeOut;
+
+                        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                        var offsetAnimation = animation.drive(tween);
+
+                        return SlideTransition(
+                          position: offsetAnimation,
+                          child: child,
+                        );
+                      },
+                      transitionDuration: Duration(milliseconds: 1000),
+                    ),
+                  );
                 },
             ),
             ],
