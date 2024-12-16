@@ -1,16 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:kursach/login_page.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:kursach/theme/theme.dart';
+import 'login_page.dart';
+import 'database_helper.dart';
 
-class RegistrationPage extends StatelessWidget {
+class RegistrationPage extends StatefulWidget {
+  @override
+  _RegistrationPageState createState() => _RegistrationPageState();
+}
+
+class _RegistrationPageState extends State<RegistrationPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _fullNameController = TextEditingController();
+  final _loginController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _dobController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
+        body: Container(
         decoration: AppStyles.backgroundGradient,
         child: Center(
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Form(
+            key: _formKey,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -25,123 +40,136 @@ class RegistrationPage extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 30),
-                // Поле "Имя пользователя"
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Имя пользователя',
-                    filled: true,
-                    fillColor: Colors.black,
-                    hintStyle: TextStyle(color: Colors.white70),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none,
-                    ),
+              TextFormField(
+                controller: _fullNameController,
+                decoration: InputDecoration(
+                  hintText: 'Имя пользователя',
+                  filled: true,
+                  fillColor: Colors.black,
+                  hintStyle: TextStyle(color: Colors.white70),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
                   ),
-                  style: TextStyle(color: Colors.white),
                 ),
-                SizedBox(height: 20),
-                // Поле "Email"
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Email',
-                    filled: true,
-                    fillColor: Colors.black,
-                    hintStyle: TextStyle(color: Colors.white70),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none,
-                    ),
+                style: TextStyle(color: Colors.white),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Введите ваше имя';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16),
+              TextFormField(
+                controller: _loginController,
+                decoration: InputDecoration(
+                  hintText: 'Email',
+                  filled: true,
+                  fillColor: Colors.black,
+                  hintStyle: TextStyle(color: Colors.white70),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
                   ),
-                  style: TextStyle(color: Colors.white),
                 ),
-                SizedBox(height: 20),
-                // Поле "Пароль"
-                TextField(
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    hintText: 'Пароль',
-                    filled: true,
-                    fillColor: Colors.black,
-                    hintStyle: TextStyle(color: Colors.white70),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none,
-                    ),
+                style: TextStyle(color: Colors.white),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Введите ваш логин';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16),
+              TextFormField(
+                controller: _passwordController,
+                decoration: InputDecoration(
+                  hintText: 'Пароль',
+                  filled: true,
+                  fillColor: Colors.black,
+                  hintStyle: TextStyle(color: Colors.white70),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
                   ),
-                  style: TextStyle(color: Colors.white),
                 ),
-                SizedBox(height: 20),
-                // Поле "Организация"
-                DropdownButtonFormField<String>(
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.black,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                  dropdownColor: Colors.black,
-                  hint: Text(
-                    'Организация',
-                    style: TextStyle(color: Colors.white70),
-                  ),
-                  items: [
-                    DropdownMenuItem(
-                      child: Text('Организация 1', style: TextStyle(color: Colors.white)),
-                      value: 'org1',
-                    ),
-                    DropdownMenuItem(
-                      child: Text('Организация 2', style: TextStyle(color: Colors.white)),
-                      value: 'org2',
-                    ),
-                  ],
-                  onChanged: (value) {},
+                style: TextStyle(color: Colors.white),
+                obscureText: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Введите ваш пароль';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16),
+              TextFormField(
+                controller: _dobController,
+                decoration: AppStyles.inputDecoration.copyWith(
+                hintText: 'Дата рождения (ГГГГ-ММ-ДД)',
                 ),
-                SizedBox(height: 30),
-                // Кнопка "Зарегистрироваться"
-                ElevatedButton(
-                  onPressed: () {
+                style: AppStyles.inputTextStyle,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Введите вашу дату рождения';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 30),
+              ElevatedButton(
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    await DatabaseHelper().registerUser(
+                      fullName: _fullNameController.text,
+                      login: _loginController.text,
+                      password: _passwordController.text,
+                      dateOfBirth: _dobController.text,
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Вы зарегестрированы')),
+                    );
                     _navigateToLoginPage(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 15),
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Text(
-                    'Зарегистрироваться',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
+                  padding: EdgeInsets.symmetric(vertical: 15),
                 ),
+                child: Text(
+                  'Зарегистрироваться',
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+              ),
                 SizedBox(height: 30),
-                // Кнопка "Уже есть аккаунт"
-                ElevatedButton(
-                  onPressed: () {
-                    _navigateToLoginPage(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 15),
+              TextButton(
+                onPressed: () {
+                  _navigateToLoginPage(context);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Text(
-                    'Уже есть аккаунт',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
+                  padding: EdgeInsets.symmetric(vertical: 15),
                 ),
-              ],
-            ),
+                child: Text(
+                  'Уже есть аккаунт',
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+              ) ,
+            ],
           ),
+            ),
         ),
       ),
+    ),
     );
   }
-
   void _navigateToLoginPage(BuildContext context) {
     Navigator.push(
       context,
