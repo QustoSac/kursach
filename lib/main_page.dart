@@ -3,6 +3,7 @@ import 'package:kursach/profile_page.dart';
 import 'package:kursach/theme/theme.dart';
 import 'vote_page.dart';
 import 'results_page.dart';
+import 'add_survey_page.dart';
 import 'database_helper.dart'; // Импорт для работы с БД
 
 class MainPage extends StatefulWidget {
@@ -166,6 +167,26 @@ class _MainPageState extends State<MainPage> {
                     FloatingActionButton(
                       onPressed: () {
                         // Логика добавления голосования
+                        Navigator.pushReplacement(
+                          context,
+                          PageRouteBuilder(
+                            pageBuilder: (context, animation, secondaryAnimation) => CreateSurveyPage(  ),
+                            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                              const begin = Offset(1.0, 0.0);
+                              const end = Offset.zero;
+                              const curve = Curves.easeOut;
+
+                              var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                              var offsetAnimation = animation.drive(tween);
+
+                              return SlideTransition(
+                                position: offsetAnimation,
+                                child: child,
+                              );
+                            },
+                            transitionDuration: Duration(milliseconds: 1000),
+                          ),
+                        );
                       },
                       backgroundColor: Colors.black,
                       child: Icon(Icons.add, color: Colors.white),
