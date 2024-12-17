@@ -121,7 +121,7 @@ class _MainPageState extends State<MainPage> {
                     itemCount: _surveys.length,
                     itemBuilder: (context, index) {
                       final survey = _surveys[index];
-                      return _buildMenuItem(context, survey['Title'], 'Описание голосования', survey['SurveyID']);
+                      return _buildMenuItem(context, survey['Title'], survey['Description'], survey['SurveyID'], survey);
                     },
                   ),
                 ),
@@ -201,12 +201,12 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Widget _buildMenuItem(BuildContext context, String title, String description, int surveyId) {
+  Widget _buildMenuItem(BuildContext context, String title, String description, int surveyId, Map<String, dynamic> survey) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => VotePage(),//surveyId: surveyId),
+            builder: (context) => VotePage(surveyId: survey['surveyId']),//
           ),
         );
       },

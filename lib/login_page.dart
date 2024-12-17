@@ -147,13 +147,14 @@ class _LoginPageState extends State<LoginPage> {
 
   // Логика обработки входа и регистрации
   void _handleSubmit() async {
-    await DatabaseHelper().checkUsers();
     if (_formKey.currentState!.validate()) {
       if (_isLogin) {
         final login = _loginController.text;
         final password = _passwordController.text;
-        final user = await DatabaseHelper().getUserByLogin(login);
+        final dbHelper = DatabaseHelper();
+        final user = await dbHelper.getUserByLogin(login);
         if (user != null && user['Password'] == password) {
+          await dbHelper.setCurrentUser(login);
           Navigator.pushReplacement(
             context,
             PageRouteBuilder(

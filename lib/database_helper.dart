@@ -6,6 +6,7 @@ class DatabaseHelper {
   // Синглтон для управления базой данных
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   static Database? _database;
+  int? currentUserId;
 
   // Фабричный конструктор для возврата экземпляра синглтона
   factory DatabaseHelper() => _instance;
@@ -34,7 +35,18 @@ class DatabaseHelper {
       },
     );
   }
-
+  // Метод для установки текущего пользователя
+  Future<void> setCurrentUser(String login) async {
+    final user = await getUserByLogin(login);
+    if (user != null) {
+      currentUserId = user['UserID'];
+    } else {
+      throw Exception('Пользователь не найден');
+    }
+    print('-------------------------------------');
+    print('userID: ${currentUserId}');
+    print('-------------------------------------');
+  }
   // Метод для создания таблиц в базе данных
   Future<void> _createTables(Database db) async {
     await db.execute('''
@@ -222,20 +234,6 @@ class DatabaseHelper {
     }
   }
 
-  Future<void> checkUsers() async {
-    final Database db = await database;
-    final List<Map<String, dynamic>> users = await db.query('Users');
-
-    for (var user in users){
-      print('UserID: ${user['UserID']}');
-      print('FullName: ${user['FullName']}');
-      print('Login: ${user['Login']}');
-      print('Password: ${user['Password']}');
-      print('DateOfBirth: ${user['DateOfBirth']}');
-    }
-    print('НАЖАЛ');
-  }
-
   // Метод для получения количества множественных ответов для данного варианта
   Future<int> getMultipleResponseCount(Database db, int optionId) async {
     final responses = await db.query('Responses', columns: ['OptionIDs']);
@@ -387,7 +385,7 @@ class DatabaseHelper {
           for (var option in options) {
             final optionId = option['OptionID'];
             final responseCount = Sqflite.firstIntValue(await db.rawQuery(
-              'SELECT COUNT(*) FROM Responses WHERE SurveyID = ? AND QuestionID = ? AND OptionID = ?',
+              'SELECT COUNT(*) FROM Responses WHERE SurveyID = ? AND QuestionID = ? AND OptionID = ? ',
               [surveyId, questionId, optionId],
             )) ?? 0;
 
@@ -435,6 +433,7 @@ class DatabaseHelper {
     );
     if (maps.isNotEmpty) {
       return maps.first;
+
     } else {
       return null;
     }
