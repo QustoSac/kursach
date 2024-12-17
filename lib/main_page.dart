@@ -3,14 +3,30 @@ import 'package:kursach/profile_page.dart';
 import 'package:kursach/theme/theme.dart';
 import 'vote_page.dart';
 import 'results_page.dart';
+import 'database_helper.dart'; // Импорт для работы с БД
 
 class MainPage extends StatefulWidget {
   @override
   _MainPageState createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage>{
+class _MainPageState extends State<MainPage> {
   bool isSwitched = false;
+  List<Map<String, dynamic>> _surveys = []; // Список опросов из базы данных
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSurveys(); // Загрузка опросов при инициализации
+  }
+
+  // Метод для загрузки опросов
+  Future<void> _loadSurveys() async {
+    final surveys = await DatabaseHelper().getAvailableSurveys();
+    setState(() {
+      _surveys = surveys;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,26 +70,26 @@ class _MainPageState extends State<MainPage>{
                   ],
                 ),
                 SizedBox(height: 30),
-                // Заголовок "Голосования"
+                // Заголовок и переключатели
                 Row(
                   children: [
-                    new Flexible(child: SizedBox(
-                      width: double.infinity,
-                      height: 40,
-                      child: TextField(
-                        obscureText: true,
-                        decoration: AppStyles.golosovanieDecoration.copyWith(
-                          hintText: 'Голосование',
+                    Flexible(
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 40,
+                        child: TextField(
+                          obscureText: true,
+                          decoration: AppStyles.golosovanieDecoration.copyWith(
+                            hintText: 'Голосование',
+                          ),
+                          style: AppStyles.inputTextStyle,
                         ),
-                        style: AppStyles.inputTextStyle,
                       ),
-                    ),
                     ),
                     SizedBox(width: 40),
                     Switch(
-                      value: isSwitched, // Текущее состояние переключателя
+                      value: isSwitched,
                       onChanged: (bool value) {
-                        // Логика переключения
                         setState(() {
                           isSwitched = value;
                         });
@@ -83,9 +99,7 @@ class _MainPageState extends State<MainPage>{
                       activeTrackColor: Colors.black,
                     ),
                     GestureDetector(
-                      onTap: () {
-                        // Логика переключения организаций
-                      },
+                      onTap: () {},
                       child: Text(
                         'Организации',
                         style: TextStyle(
@@ -95,24 +109,18 @@ class _MainPageState extends State<MainPage>{
                         ),
                       ),
                     ),
-                    SizedBox(width: 10),
-                    // TextField(
-                    //   decoration: AppStyles.inputDecoration.copyWith(
-                    //     hintText: 'Логин',
-                    //   ),
-                    //   style: AppStyles.inputTextStyle,
-                    // )
                   ],
                 ),
-                // Список голосований
+                SizedBox(height: 20),
+                // Список голосований из базы данных
                 Expanded(
-                  child: ListView.builder(
-                    itemCount: 5, // Количество элементов в списке
+                  child: _surveys.isEmpty
+                      ? Center(child: Text('Нет доступных голосований.', style: TextStyle(color: Colors.white)))
+                      : ListView.builder(
+                    itemCount: _surveys.length,
                     itemBuilder: (context, index) {
-                    return Padding(
-                        padding: EdgeInsets.all(5),
-                        child: _buildMenuItem(context, 'Menu Label', 'Menu description')
-                    );
+                      final survey = _surveys[index];
+                      return _buildMenuItem(context, survey['Title'], 'Описание голосования', survey['SurveyID']);
                     },
                   ),
                 ),
@@ -123,30 +131,27 @@ class _MainPageState extends State<MainPage>{
                     Expanded(
                       child: ElevatedButton.icon(
                         onPressed: () {
-                          // Логика для перехода к результатам
                           Navigator.pushReplacement(
-                          context,
-                          PageRouteBuilder(
-                          pageBuilder: (context, animation, secondaryAnimation) => ResultsPage(),
-                          transitionsBuilder:
-                          (context, animation, secondaryAnimation, child) {
-                          const begin = Offset(1.0, 0.0); // Анимация снизу вверх
-                          const end = Offset.zero;
-                          const curve = Curves.easeOut;
+                            context,
+                            PageRouteBuilder(
+                              pageBuilder: (context, animation, secondaryAnimation) => ResultsPage(),
+                              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                const begin = Offset(1.0, 0.0);
+                                const end = Offset.zero;
+                                const curve = Curves.easeOut;
 
-                          var tween = Tween(begin: begin, end: end)
-                              .chain(CurveTween(curve: curve));
-                          var offsetAnimation = animation.drive(tween);
+                                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                                var offsetAnimation = animation.drive(tween);
 
-                          return SlideTransition(
-                          position: offsetAnimation,
-                          child: child,
+                                return SlideTransition(
+                                  position: offsetAnimation,
+                                  child: child,
+                                );
+                              },
+                              transitionDuration: Duration(milliseconds: 1000),
+                            ),
                           );
-                          },
-                          transitionDuration: Duration(milliseconds: 1000), // Длительность анимации
-                          ),
-                          );
-                          },
+                        },
                         style: AppStyles.elevatedButtonStyle.copyWith(
                           padding: MaterialStateProperty.all(EdgeInsets.symmetric(vertical: 12)),
                         ),
@@ -160,7 +165,7 @@ class _MainPageState extends State<MainPage>{
                     SizedBox(width: 16),
                     FloatingActionButton(
                       onPressed: () {
-                        // Логика для добавления нового голосования
+                        // Логика добавления голосования
                       },
                       backgroundColor: Colors.black,
                       child: Icon(Icons.add, color: Colors.white),
@@ -174,10 +179,15 @@ class _MainPageState extends State<MainPage>{
       ),
     );
   }
-  Widget _buildMenuItem(BuildContext context, String title, String description) {
+
+  Widget _buildMenuItem(BuildContext context, String title, String description, int surveyId) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(_createRouteToVotePage());
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => VotePage(),//surveyId: surveyId),
+          ),
+        );
       },
       child: ListTile(
         leading: Icon(Icons.star, color: Colors.white),
@@ -185,26 +195,6 @@ class _MainPageState extends State<MainPage>{
         subtitle: Text(description, style: AppStyles.footerTextStyle.copyWith(color: Colors.white70)),
         trailing: Icon(Icons.chevron_right, color: Colors.white),
       ),
-    );
-  }
-
-  Route _createRouteToVotePage() {
-    return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => VotePage(),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(1.0, 0.0); // Начинается справа
-        const end = Offset.zero;       // Окончание в центре
-        const curve = Curves.easeInOut;
-
-        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-        var offsetAnimation = animation.drive(tween);
-
-        return SlideTransition(
-          position: offsetAnimation,
-          child: child,
-        );
-      },
-      transitionDuration: Duration(milliseconds: 1000),
     );
   }
 }
