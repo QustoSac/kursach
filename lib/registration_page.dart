@@ -19,155 +19,155 @@ class _RegistrationPageState extends State<RegistrationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Container(
+      body: Container(
         decoration: AppStyles.backgroundGradient,
         child: Center(
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(horizontal: 20),
             child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  'Регистрация',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    'Регистрация',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 30),
-              TextFormField(
-                controller: _fullNameController,
-                decoration: InputDecoration(
-                  hintText: 'Имя пользователя',
-                  filled: true,
-                  fillColor: Colors.black,
-                  hintStyle: TextStyle(color: Colors.white70),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide.none,
+                  SizedBox(height: 30),
+                  TextFormField(
+                    controller: _fullNameController,
+                    decoration: InputDecoration(
+                      hintText: 'Имя пользователя',
+                      filled: true,
+                      fillColor: Colors.black,
+                      hintStyle: TextStyle(color: Colors.white70),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    style: TextStyle(color: Colors.white),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Введите ваше имя';
+                      }
+                      return null;
+                    },
                   ),
-                ),
-                style: TextStyle(color: Colors.white),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Введите ваше имя';
-                  }
-                  return null;
-                },
+                  SizedBox(height: 16),
+                  TextFormField(
+                    controller: _loginController,
+                    decoration: InputDecoration(
+                      hintText: 'Email',
+                      filled: true,
+                      fillColor: Colors.black,
+                      hintStyle: TextStyle(color: Colors.white70),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    style: TextStyle(color: Colors.white),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Введите ваш логин';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 16),
+                  TextFormField(
+                    controller: _passwordController,
+                    decoration: InputDecoration(
+                      hintText: 'Пароль',
+                      filled: true,
+                      fillColor: Colors.black,
+                      hintStyle: TextStyle(color: Colors.white70),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    style: TextStyle(color: Colors.white),
+                    obscureText: true,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Введите ваш пароль';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 16),
+                  TextFormField(
+                    controller: _dobController,
+                    decoration: AppStyles.inputDecoration.copyWith(
+                      hintText: 'Дата рождения (ГГГГ-ММ-ДД)',
+                    ),
+                    style: AppStyles.inputTextStyle,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Введите вашу дату рождения';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 30),
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        await DatabaseHelper().registerUser(
+                          fullName: _fullNameController.text,
+                          login: _loginController.text,
+                          password: _passwordController.text,
+                          dateOfBirth: _dobController.text,
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Вы зарегестрированы')),
+                        );
+                        _navigateToLoginPage(context);
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 15),
+                    ),
+                    child: Text(
+                      'Зарегистрироваться',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ),
+                  SizedBox(height: 30),
+                  TextButton(
+                    onPressed: () {
+                      _navigateToLoginPage(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 15),
+                    ),
+                    child: Text(
+                      'Уже есть аккаунт',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ) ,
+                ],
               ),
-              SizedBox(height: 16),
-              TextFormField(
-                controller: _loginController,
-                decoration: InputDecoration(
-                  hintText: 'Email',
-                  filled: true,
-                  fillColor: Colors.black,
-                  hintStyle: TextStyle(color: Colors.white70),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-                style: TextStyle(color: Colors.white),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Введите ваш логин';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                controller: _passwordController,
-                decoration: InputDecoration(
-                  hintText: 'Пароль',
-                  filled: true,
-                  fillColor: Colors.black,
-                  hintStyle: TextStyle(color: Colors.white70),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-                style: TextStyle(color: Colors.white),
-                obscureText: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Введите ваш пароль';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                controller: _dobController,
-                decoration: AppStyles.inputDecoration.copyWith(
-                hintText: 'Дата рождения (ГГГГ-ММ-ДД)',
-                ),
-                style: AppStyles.inputTextStyle,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Введите вашу дату рождения';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    await DatabaseHelper().registerUser(
-                      fullName: _fullNameController.text,
-                      login: _loginController.text,
-                      password: _passwordController.text,
-                      dateOfBirth: _dobController.text,
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Вы зарегестрированы')),
-                    );
-                    _navigateToLoginPage(context);
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: EdgeInsets.symmetric(vertical: 15),
-                ),
-                child: Text(
-                  'Зарегистрироваться',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-              ),
-                SizedBox(height: 30),
-              TextButton(
-                onPressed: () {
-                  _navigateToLoginPage(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: EdgeInsets.symmetric(vertical: 15),
-                ),
-                child: Text(
-                  'Уже есть аккаунт',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-              ) ,
-            ],
-          ),
             ),
+          ),
         ),
       ),
-    ),
     );
   }
   void _navigateToLoginPage(BuildContext context) {

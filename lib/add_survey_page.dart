@@ -79,7 +79,7 @@ class _CreateSurveyPageState extends State<CreateSurveyPage> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+            icon: Icon(Icons.arrow_back_ios, color: Colors.white),
             onPressed: ()
             {
               Navigator.push(

@@ -7,6 +7,7 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
+
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -25,8 +26,10 @@ class ProfilePage extends StatelessWidget {
           ),
         ],
       ),
+      resizeToAvoidBottomInset: false,
       body: Container(
         decoration: AppStyles.backgroundGradient,
+        height: MediaQuery.of(context).size.height,
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -58,18 +61,18 @@ class ProfilePage extends StatelessWidget {
                   _showMessageDialog(context, 'Ваше ФИО: example_FIO');
                 }),
               ]),
-              _buildSection(context, 'Организации', [
-                _buildMenuItem(context, 'Мои организации', icon: Icons.favorite),
-                _buildMenuItem(context, 'Добавить организацию', icon: Icons.download, onTap: () {
-                  _showAddOrganizationBottomSheet(context);
-                }),
-              ]),
-              _buildSection(context, 'Настройки', [
-                _buildMenuItem(context, 'Язык', icon: Icons.language),
-                _buildMenuItem(context, 'Darkmode', icon: Icons.dark_mode),
-                _buildMenuItem(context, 'Only Download via Wifi', icon: Icons.wifi),
-              ]),
-              SizedBox(height: 40),
+              // _buildSection(context, 'Организации', [
+              //   _buildMenuItem(context, 'Мои организации', icon: Icons.favorite),
+              //   _buildMenuItem(context, 'Добавить организацию', icon: Icons.download, onTap: () {
+              //     _showAddOrganizationBottomSheet(context);
+              //   }),
+              // ]),
+              // _buildSection(context, 'Настройки', [
+              //   _buildMenuItem(context, 'Язык', icon: Icons.language),
+              //   _buildMenuItem(context, 'Darkmode', icon: Icons.dark_mode),
+              //   _buildMenuItem(context, 'Only Download via Wifi', icon: Icons.wifi),
+              // ]),
+              SizedBox(height: 320),
               _buildLogoutButton(context),
             ],
           ),

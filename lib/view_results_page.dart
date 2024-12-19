@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'main_page.dart';
 import 'theme/theme.dart';
@@ -10,91 +11,91 @@ class ViewResultsPage extends StatelessWidget {
       body: Container(
         decoration: AppStyles.backgroundGradient,
         child: SafeArea(child: Padding(padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-            Row(
-            children: [
-              IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    PageRouteBuilder(
-                      pageBuilder: (context, animation, secondaryAnimation) => ResultsPage(),
-                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                        const begin = Offset(-1.0, 0.0); // Анимация справа налево
-                        const end = Offset.zero;
-                        const curve = Curves.easeOut;
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.arrow_back, color: Colors.white),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                            pageBuilder: (context, animation, secondaryAnimation) => ResultsPage(),
+                            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                              const begin = Offset(-1.0, 0.0); // Анимация справа налево
+                              const end = Offset.zero;
+                              const curve = Curves.easeOut;
 
-                        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                        var offsetAnimation = animation.drive(tween);
+                              var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                              var offsetAnimation = animation.drive(tween);
 
-                        return SlideTransition(
-                          position: offsetAnimation,
-                          child: child,
+                              return SlideTransition(
+                                position: offsetAnimation,
+                                child: child,
+                              );
+                            },
+                            transitionDuration: Duration(milliseconds: 1000),
+                          ),
                         );
                       },
-                      transitionDuration: Duration(milliseconds: 1000),
                     ),
-                  );
-                },
-            ),
-            ],
-            ),
-              SizedBox(height: 40),
-              _buildTitle('Название голосования'),
-              SizedBox(height: 20),
-              _buildQuestionBlock('Вопрос', [
-                _buildResultRow('Вариант 1', 70),
-                _buildResultRow('Вариант 2', 30),
-                _buildResultRow('Вариант 3', 50),
-              ]),
-              SizedBox(height: 20),
-              _buildQuestionBlock('Вопрос', [
-                _buildResultRow('Вариант 1', 80),
-                _buildResultRow('Вариант 2', 20),
-                _buildResultRow('Вариант 3', 60),
-              ]),
-              SizedBox(height: 40),
-
-              Padding(
-                padding: const EdgeInsets.only(left: 20,bottom: 20),
-                child: Align(
-                  alignment: Alignment.bottomLeft,
-                child: FloatingActionButton(
-                  backgroundColor: Colors.black,
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      PageRouteBuilder(
-                        pageBuilder: (context, animation, secondaryAnimation) => MainPage(),
-                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                          const begin = Offset(-1.0, 0.0); // Анимация справа налево
-                          const end = Offset.zero;
-                          const curve = Curves.easeOut;
-
-                          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                          var offsetAnimation = animation.drive(tween);
-
-                          return SlideTransition(
-                            position: offsetAnimation,
-                            child: child,
-                          );
-                        },
-                        transitionDuration: Duration(milliseconds: 1000),
-                      ),
-                    );
-                  },
-                  child: Icon(Icons.home, color: Colors.white),
+                  ],
                 ),
-              ),
-              ),
-            ],
+                SizedBox(height: 40),
+                _buildTitle('Название голосования'),
+                SizedBox(height: 20),
+                _buildQuestionBlock('Вопрос', [
+                  _buildResultRow('Вариант 1', 70),
+                  _buildResultRow('Вариант 2', 30),
+                  _buildResultRow('Вариант 3', 50),
+                ]),
+                SizedBox(height: 20),
+                _buildQuestionBlock('Вопрос', [
+                  _buildResultRow('Вариант 1', 80),
+                  _buildResultRow('Вариант 2', 20),
+                  _buildResultRow('Вариант 3', 60),
+                ]),
+                SizedBox(height: 40),
+
+                Padding(
+                  padding: const EdgeInsets.only(left: 20,bottom: 20),
+                  child: Align(
+                    alignment: Alignment.bottomLeft,
+                    child: FloatingActionButton(
+                      backgroundColor: Colors.black,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                            pageBuilder: (context, animation, secondaryAnimation) => MainPage(),
+                            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                              const begin = Offset(-1.0, 0.0); // Анимация справа налево
+                              const end = Offset.zero;
+                              const curve = Curves.easeOut;
+
+                              var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                              var offsetAnimation = animation.drive(tween);
+
+                              return SlideTransition(
+                                position: offsetAnimation,
+                                child: child,
+                              );
+                            },
+                            transitionDuration: Duration(milliseconds: 1000),
+                          ),
+                        );
+                      },
+                      child: Icon(Icons.home, color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    ),
+        ),
       ),
 
     );

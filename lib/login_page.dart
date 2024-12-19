@@ -199,7 +199,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  // Поля для регистрации
+// Поля для регистрации
 //   List<Widget> _buildRegistrationFields() {
 //     return [
 //       SizedBox(height: 15),

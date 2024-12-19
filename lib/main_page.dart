@@ -121,7 +121,21 @@ class _MainPageState extends State<MainPage> {
                     itemCount: _surveys.length,
                     itemBuilder: (context, index) {
                       final survey = _surveys[index];
-                      return _buildMenuItem(context, survey['Title'], survey['Description'], survey['SurveyID'], survey);
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => VotePage(/*surveyId: survey['SurveyID']*/),
+                            ),
+                          );
+                        },
+                        child: ListTile(
+                          leading: Icon(Icons.star, color: Colors.white),
+                          title: Text(survey['Title'], style: AppStyles.inputTextStyle.copyWith(fontSize: 18)),
+                          subtitle: Text(survey['Description'], style: AppStyles.footerTextStyle.copyWith(color: Colors.white70)),
+                          trailing: Icon(Icons.chevron_right, color: Colors.white),
+                        ),
+                      );
                     },
                   ),
                 ),
@@ -170,7 +184,7 @@ class _MainPageState extends State<MainPage> {
                         Navigator.pushReplacement(
                           context,
                           PageRouteBuilder(
-                            pageBuilder: (context, animation, secondaryAnimation) => CreateSurveyPage(  ),
+                            pageBuilder: (context, animation, secondaryAnimation) => CreateSurveyPage(),
                             transitionsBuilder: (context, animation, secondaryAnimation, child) {
                               const begin = Offset(1.0, 0.0);
                               const end = Offset.zero;
@@ -197,24 +211,6 @@ class _MainPageState extends State<MainPage> {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildMenuItem(BuildContext context, String title, String description, int surveyId, Map<String, dynamic> survey) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => VotePage(surveyId: survey['surveyId']),//
-          ),
-        );
-      },
-      child: ListTile(
-        leading: Icon(Icons.star, color: Colors.white),
-        title: Text(title, style: AppStyles.inputTextStyle.copyWith(fontSize: 18)),
-        subtitle: Text(description, style: AppStyles.footerTextStyle.copyWith(color: Colors.white70)),
-        trailing: Icon(Icons.chevron_right, color: Colors.white),
       ),
     );
   }
