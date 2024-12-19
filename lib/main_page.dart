@@ -125,7 +125,7 @@ class _MainPageState extends State<MainPage> {
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => VotePage(/*surveyId: survey['SurveyID']*/),
+                              builder: (context) => VotePage(surveyId: survey['SurveyID']),
                             ),
                           );
                         },
