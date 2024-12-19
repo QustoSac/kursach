@@ -17,6 +17,22 @@ class _CreateSurveyPageState extends State<CreateSurveyPage> {
   String _currentQuestionText = '';
   String _currentQuestionType = 'text';
   List<String> _currentQuestionOptions = [];
+  int? _userId;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserId();
+  }
+
+  Future<void> _loadUserId() async {
+    final userId = DatabaseHelper().currentUserId;
+    if (userId != null) {
+      setState(() {
+        _userId = userId;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -208,7 +224,7 @@ class _CreateSurveyPageState extends State<CreateSurveyPage> {
       await DatabaseHelper().createSurvey(
         title: _titleController.text,
         description: _descriptionController.text,
-        creatorUserID: 1, // Пример ID пользователя
+        creatorUserID: _userId!,
         startDate: DateTime.now(),
         endDate: DateTime.now().add(Duration(days: 7)),
         isPublic: true,

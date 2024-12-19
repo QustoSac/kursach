@@ -88,28 +88,7 @@ class _MainPageState extends State<MainPage> {
                       ),
                     ),
                     SizedBox(width: 40),
-                    Switch(
-                      value: isSwitched,
-                      onChanged: (bool value) {
-                        setState(() {
-                          isSwitched = value;
-                        });
-                      },
-                      activeColor: Colors.white,
-                      inactiveThumbColor: Colors.grey,
-                      activeTrackColor: Colors.black,
-                    ),
-                    GestureDetector(
-                      onTap: () {},
-                      child: Text(
-                        'Организации',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
+
                   ],
                 ),
                 SizedBox(height: 20),

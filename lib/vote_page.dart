@@ -16,6 +16,8 @@ class _VotePageState extends State<VotePage> {
   Map<String, dynamic>? _survey;
   List<Map<String, dynamic>> _questions = [];
   Map<int, dynamic> _answers = {};
+  Map<int, int?> _selectedOptionIds = {};
+  Map<int, List<int>> _selectedMultipleOptionIds = {};
   int? _userId;
 
   @override
@@ -53,6 +55,7 @@ class _VotePageState extends State<VotePage> {
       return {
         'questionID': questionId,
         'optionID': answerData['optionID'],
+        'optionIDs': answerData['OptionIDs'],
         'textAnswer': answerData['textAnswer'],
       };
     }).toList();
@@ -81,108 +84,98 @@ class _VotePageState extends State<VotePage> {
     }
 
     return Scaffold(
-        extendBodyBehindAppBar: true,
-        body: Container(
-            decoration: AppStyles.backgroundGradient, // Градиентный фон
-            child: LayoutBuilder(
-                builder: (BuildContext context, BoxConstraints constraints) {
-                  return SingleChildScrollView(
-                    padding: EdgeInsets.all(20),
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        minHeight: constraints
-                            .maxHeight, // Задаем минимальную высоту = высота экрана
-                      ),
-                      child: IntrinsicHeight(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                IconButton(
-                                  icon: Icon(
-                                      Icons.arrow_back, color: Colors.white),
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      PageRouteBuilder(
-                                        pageBuilder: (context, animation,
-                                            secondaryAnimation) => MainPage(),
-                                        transitionsBuilder: (context, animation,
-                                            secondaryAnimation, child) {
-                                          const begin = Offset(-1.0,
-                                              0.0); // Анимация справа налево
-                                          const end = Offset.zero;
-                                          const curve = Curves.easeOut;
+      extendBodyBehindAppBar: true,
+      body: Container(
+        decoration: AppStyles.backgroundGradient, // Градиентный фон
+        child: LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+            return SingleChildScrollView(
+              padding: EdgeInsets.all(20),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight, // Задаем минимальную высоту = высота экрана
+                ),
+                child: IntrinsicHeight(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.arrow_back, color: Colors.white),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                  pageBuilder: (context, animation, secondaryAnimation) => MainPage(),
+                                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                    const begin = Offset(-1.0, 0.0); // Анимация справа налево
+                                    const end = Offset.zero;
+                                    const curve = Curves.easeOut;
 
-                                          var tween = Tween(
-                                              begin: begin, end: end).chain(
-                                              CurveTween(curve: curve));
-                                          var offsetAnimation = animation.drive(
-                                              tween);
+                                    var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                                    var offsetAnimation = animation.drive(tween);
 
-                                          return SlideTransition(
-                                            position: offsetAnimation,
-                                            child: child,
-                                          );
-                                        },
-                                        transitionDuration: Duration(
-                                            milliseconds: 1000),
-                                      ),
+                                    return SlideTransition(
+                                      position: offsetAnimation,
+                                      child: child,
                                     );
                                   },
+                                  transitionDuration: Duration(milliseconds: 1000),
                                 ),
-                              ],
-                            ),
-                            SizedBox(height: kToolbarHeight + 20),
-                            // Отступ для AppBar
-                            Center(
-                              child: Text(
-                                _survey?['Title'],
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            Center(
-                              child: Text(
-                              _survey!['Description'] ?? '',
-                              style: AppStyles.footerTextStyle.copyWith(color: Colors.white70),
-                              ),
-                            ),
-                            SizedBox(height: 16),
-                            ..._questions.map((question) {
-                              final questionId = question['QuestionID'];
-                              final questionText = question['QuestionText'];
-                              final questionType = question['QuestionType'];
-
-                              return _buildQuestionBlock(
-                                  questionId, questionText, questionType);
-                            }),
-                            SizedBox(height: 16),
-                            Center(
-                              child: ElevatedButton(
-                                onPressed: _submitResponses,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.black,
-                                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                ),
-                                child: Text('Проголосовать', style: TextStyle(color: Colors.white, fontSize: 18)),
-                              ),
-                            ),
-                          ],
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: kToolbarHeight + 20),
+                      // Отступ для AppBar
+                      Center(
+                        child: Text(
+                          _survey?['Title'],
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
-            ),
+                      Center(
+                        child: Text(
+                          _survey!['Description'] ?? '',
+                          style: AppStyles.footerTextStyle.copyWith(color: Colors.white70),
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      ..._questions.map((question) {
+                        final questionId = question['QuestionID'];
+                        final questionText = question['QuestionText'];
+                        final questionType = question['QuestionType'];
+
+                        return _buildQuestionBlock(questionId, questionText, questionType);
+                      }),
+                      SizedBox(height: 16),
+                      Center(
+                        child: ElevatedButton(
+                          onPressed: _submitResponses,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.black,
+                            padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          child: Text('Проголосовать', style: TextStyle(color: Colors.white, fontSize: 18)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
         ),
+      ),
     );
   }
 
@@ -224,8 +217,8 @@ class _VotePageState extends State<VotePage> {
         filled: true,
         fillColor: Colors.black,
         border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide.none,
         ),
       ),
       style: TextStyle(color: Colors.white),
@@ -244,16 +237,17 @@ class _VotePageState extends State<VotePage> {
           children: options.map((option) {
             final optionId = option['OptionID'];
             return RadioListTile<int>(
-              title: Text(option['OptionText'], style: TextStyle(color: Colors.white),),
+              title: Text(option['OptionText'], style: TextStyle(color: Colors.white)),
               value: optionId,
-              groupValue: _answers[questionId]?['optionID'],
+              groupValue: _selectedOptionIds[questionId],
               onChanged: (value) {
                 setState(() {
+                  _selectedOptionIds[questionId] = value;
                   _answers[questionId] = {'optionID': value};
                 });
               },
               activeColor: Colors.black,
-              fillColor: WidgetStateProperty.all(Colors.white),
+              fillColor: MaterialStateProperty.all(Colors.white),
             );
           }).toList(),
         );
@@ -271,19 +265,18 @@ class _VotePageState extends State<VotePage> {
         return Column(
           children: options.map((option) {
             final optionId = option['OptionID'];
-            final isChecked = (_answers[questionId]?['OptionIDs'] ?? []).contains(optionId);
+            final isChecked = (_selectedMultipleOptionIds[questionId] ?? []).contains(optionId);
             return CheckboxListTile(
-              title: Text(option['OptionText'], style: TextStyle(color: Colors.white),),
+              title: Text(option['OptionText'], style: TextStyle(color: Colors.white)),
               value: isChecked,
               onChanged: (checked) {
                 setState(() {
-                  final optionIDs = (_answers[questionId]?['OptionIDs'] ?? []).cast<int>();
                   if (checked!) {
-                    optionIDs.add(optionId);
+                    (_selectedMultipleOptionIds[questionId] ??= []).add(optionId);
                   } else {
-                    optionIDs.remove(optionId);
+                    (_selectedMultipleOptionIds[questionId] ??= []).remove(optionId);
                   }
-                  _answers[questionId] = {'OptionIDs': optionIDs};
+                  _answers[questionId] = {'OptionIDs': _selectedMultipleOptionIds[questionId]};
                 });
               },
               activeColor: Colors.white,

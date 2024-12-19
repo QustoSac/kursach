@@ -1,103 +1,89 @@
-
+// Виджет листа с деталями опроса
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'main_page.dart';
-import 'theme/theme.dart';
-import 'results_page.dart';
 
-class ViewResultsPage extends StatelessWidget {
+import 'database_helper.dart';
+import 'theme/theme.dart'; // Импортируем файл стилей
+
+class SurveyDetailSheet extends StatefulWidget {
+  final int surveyId; // Идентификатор опроса
+
+  SurveyDetailSheet({required this.surveyId});
+
+  @override
+  _SurveyDetailSheetState createState() => _SurveyDetailSheetState();
+}
+
+// Состояние виджета листа с деталями опроса
+class _SurveyDetailSheetState extends State<SurveyDetailSheet> {
+  Map<String, dynamic>? _results; // Результаты опроса
+
+  @override
+  void initState() {
+    super.initState();
+    _loadResults(); // Загрузка результатов опроса при инициализации состояния
+  }
+
+  // Метод для загрузки результатов опроса из базы данных
+  Future<void> _loadResults() async {
+    final results = await DatabaseHelper().getSurveyResults(widget.surveyId);
+    setState(() {
+      _results = results; // Обновление состояния с результатами опроса
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_results == null) {
+      return Center(
+          child: CircularProgressIndicator()); // Отображение индикатора загрузки, если результаты еще не загружены
+    }
+
     return Scaffold(
       body: Container(
+        height: MediaQuery.of(context).size.height,
         decoration: AppStyles.backgroundGradient,
-        child: SafeArea(child: Padding(padding: const EdgeInsets.all(16.0),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.arrow_back, color: Colors.white),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          PageRouteBuilder(
-                            pageBuilder: (context, animation, secondaryAnimation) => ResultsPage(),
-                            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                              const begin = Offset(-1.0, 0.0); // Анимация справа налево
-                              const end = Offset.zero;
-                              const curve = Curves.easeOut;
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SingleChildScrollView(
+              child: Column(
 
-                              var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                              var offsetAnimation = animation.drive(tween);
-
-                              return SlideTransition(
-                                position: offsetAnimation,
-                                child: child,
-                              );
-                            },
-                            transitionDuration: Duration(milliseconds: 1000),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-                SizedBox(height: 40),
-                _buildTitle('Название голосования'),
-                SizedBox(height: 20),
-                _buildQuestionBlock('Вопрос', [
-                  _buildResultRow('Вариант 1', 70),
-                  _buildResultRow('Вариант 2', 30),
-                  _buildResultRow('Вариант 3', 50),
-                ]),
-                SizedBox(height: 20),
-                _buildQuestionBlock('Вопрос', [
-                  _buildResultRow('Вариант 1', 80),
-                  _buildResultRow('Вариант 2', 20),
-                  _buildResultRow('Вариант 3', 60),
-                ]),
-                SizedBox(height: 40),
-
-                Padding(
-                  padding: const EdgeInsets.only(left: 20,bottom: 20),
-                  child: Align(
-                    alignment: Alignment.bottomLeft,
-                    child: FloatingActionButton(
-                      backgroundColor: Colors.black,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          PageRouteBuilder(
-                            pageBuilder: (context, animation, secondaryAnimation) => MainPage(),
-                            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                              const begin = Offset(-1.0, 0.0); // Анимация справа налево
-                              const end = Offset.zero;
-                              const curve = Curves.easeOut;
-
-                              var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                              var offsetAnimation = animation.drive(tween);
-
-                              return SlideTransition(
-                                position: offsetAnimation,
-                                child: child,
-                              );
-                            },
-                            transitionDuration: Duration(milliseconds: 1000),
-                          ),
-                        );
-                      },
-                      child: Icon(Icons.home, color: Colors.white),
+                children: [
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.arrow_back, color: Colors.white),
+                        onPressed: () {
+                          Navigator.pop(context); // Закрытие листа
+                        },
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 40),
+                  _buildTitle(_results!['surveyTitle']),
+                  SizedBox(height: 20),
+                  ..._buildResultWidgets(),
+                  SizedBox(height: 40),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20, bottom: 20),
+                    child: Align(
+                      alignment: Alignment.bottomLeft,
+                      child: FloatingActionButton(
+                        backgroundColor: Colors.black,
+                        onPressed: () {
+                          Navigator.pop(context); // Закрытие листа
+                        },
+                        child: Icon(Icons.home, color: Colors.white),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
-        ),
       ),
-
     );
   }
 
@@ -108,8 +94,76 @@ class ViewResultsPage extends StatelessWidget {
       textAlign: TextAlign.center,
     );
   }
+  Widget _buildDescription(String description){
+    return Text(
+      description,
+      style: AppStyles.footerTextStyle.copyWith(color: Colors.white70),
+      textAlign: TextAlign.center,
+    );
+  }
 
-  Widget _buildQuestionBlock(String question, List<Widget> results) {
+  // Метод для построения виджетов результатов
+  List<Widget> _buildResultWidgets() {
+    return _results!['questionResults'].map<Widget>((questionResult) {
+      final questionText = questionResult['questionText'];
+      final optionResults = questionResult['optionResults'] ?? [];
+      final multipleOptionIDs = questionResult['optionIDs'] ?? [];
+      final textAnswers = questionResult['textAnswers'] ?? [];
+
+      // Подсчет общего количества ответов
+      int totalResponses = optionResults.fold<int>(
+        0,
+            (int sum,
+            dynamic option) {
+          return sum + (option['responseCount'] != null
+              ? (option['responseCount'] as int)
+              : 0);
+        },
+      );
+
+      // Подсчет голосов для множественных вариантов
+      Map<int, int> multipleOptionCounts = {};
+      for (var optionId in multipleOptionIDs) {
+        multipleOptionCounts[optionId] =
+            (multipleOptionCounts[optionId] ?? 0) + 1;
+      }
+
+      // Подсчет общих голосов, включая множественные варианты
+      int totalCountIncludingMultiple = totalResponses;
+      optionResults.forEach((option) {
+        final optionId = option['OptionID'];
+        if (multipleOptionCounts.containsKey(optionId)) {
+          totalCountIncludingMultiple += multipleOptionCounts[optionId]!;
+        }
+      });
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Заголовок вопроса
+          _buildQuestionBlock(questionText, optionResults, multipleOptionCounts, totalCountIncludingMultiple),
+          // Обработка текстовых ответов
+          if (textAnswers.isNotEmpty)
+            ...textAnswers.map<Widget>((textAnswer) {
+              return Container(
+                margin: EdgeInsets.symmetric(vertical: 4),
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade100,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  textAnswer,
+                  style: TextStyle(color: Colors.black),
+                ),
+              );
+            }).toList(),
+        ],
+      );
+    }).toList();
+  }
+
+  Widget _buildQuestionBlock(String question, List<dynamic> optionResults, Map<int, int> multipleOptionCounts, int totalCountIncludingMultiple) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Column(
@@ -130,7 +184,17 @@ class ViewResultsPage extends StatelessWidget {
             ),
           ),
           SizedBox(height: 10),
-          ...results,
+          ...optionResults.map<Widget>((optionResult) {
+            final optionText = optionResult['optionText'] ?? 'Неизвестный вариант';
+            final responseCount = (optionResult['responseCount'] ?? 0) as int;
+            final multipleResponseCount = multipleOptionCounts[optionResult['OptionID']] ?? 0;
+            final totalCount = responseCount + multipleResponseCount;
+            final percentage = totalCountIncludingMultiple > 0
+                ? (totalCount / totalCountIncludingMultiple * 100)
+                : 0;
+
+            return _buildResultRow(optionText, percentage.toInt());
+          }).toList(),
         ],
       ),
     );

@@ -36,7 +36,7 @@ class ProfilePage extends StatelessWidget {
               SizedBox(height: 20),
               CircleAvatar(
                 radius: 50,
-                backgroundImage: AssetImage('assets/avatar_placeholder.png'),
+                backgroundImage: AssetImage('assets/DefaultPhoto.png'),
               ),
               SizedBox(height: 10),
               ElevatedButton(
@@ -61,17 +61,7 @@ class ProfilePage extends StatelessWidget {
                   _showMessageDialog(context, 'Ваше ФИО: example_FIO');
                 }),
               ]),
-              // _buildSection(context, 'Организации', [
-              //   _buildMenuItem(context, 'Мои организации', icon: Icons.favorite),
-              //   _buildMenuItem(context, 'Добавить организацию', icon: Icons.download, onTap: () {
-              //     _showAddOrganizationBottomSheet(context);
-              //   }),
-              // ]),
-              // _buildSection(context, 'Настройки', [
-              //   _buildMenuItem(context, 'Язык', icon: Icons.language),
-              //   _buildMenuItem(context, 'Darkmode', icon: Icons.dark_mode),
-              //   _buildMenuItem(context, 'Only Download via Wifi', icon: Icons.wifi),
-              // ]),
+
               SizedBox(height: 320),
               _buildLogoutButton(context),
             ],
@@ -174,46 +164,6 @@ class ProfilePage extends StatelessWidget {
         ],
       ),
 
-    );
-  }
-
-  void _showAddOrganizationBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => Container(
-        decoration: AppStyles.backgroundGradient,
-        child: Padding(
-        padding: const EdgeInsets.only(left: 60, top: 20.0, right: 60, bottom: 20),
-
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              decoration: AppStyles.inputDecoration.copyWith(
-                hintText: 'Организация'
-              ),
-              style: AppStyles.inputTextStyle,
-              ),
-            SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-            child: ElevatedButton(
-
-              onPressed: () {
-                // Логика добавления организации
-                Navigator.of(context).pop();
-              },
-              child: Text('Добавить', style: AppStyles.buttonTextStyle),
-                style: AppStyles.elevatedButtonStyle
-            ),
-            ),
-          ],
-        ),
-      ),
-      ),
     );
   }
 }
